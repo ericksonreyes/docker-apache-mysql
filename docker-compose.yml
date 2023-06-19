@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+
+
+
+  php:
+    build:
+      context: .
+      dockerfile: docker/php.Dockerfile
+    volumes:
+    - './storage/php:/var/log/php/:delegated'
+    - './public/:/var/www/html:delegated'
+    tty: true
+    networks:
+    - 'network-docker-apache-mysql'
+    container_name: 'docker-apache-mysql-php'
+
+
+
+  mysql:
+    build:
+      context: .
+      dockerfile: docker/mysql.Dockerfile
+    environment:
+      MYSQL_USER: root
+      MYSQL_PASSWORD: r00t@dm1n
+      MYSQL_DATABASE: mydb
+      MYSQL_ROOT_PASSWORD: r00t@dm1n
+    volumes:
+    - './storage/mysql:/var/log/mysql:delegated'
+    - './storage/mysql:/var/lib/mysql:delegated'
+    restart: unless-stopped
+    ports:
+    - '3306:3306'
+    networks:
+    - 'network-docker-apache-mysql'
+    container_name: 'docker-apache-mysql-mysql'
+
+
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/apache.Dockerfile
+    ports:
+    - '80:80'
+    volumes:
+    - './public/:/var/www/html:delegated'
+    - './storage/apache2:/var/log/apache2:delegated'
+    restart: unless-stopped
+    depends_on:
+    - mysql
+    networks:
+    - 'network-docker-apache-mysql'
+    container_name: 'docker-apache-mysql-apache'
+
+
+
+networks:
+  network-docker-apache-mysql:

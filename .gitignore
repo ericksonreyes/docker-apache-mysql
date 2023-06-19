@@ -1,0 +1,12 @@
+/.idea
+.DS_Store
+*.bak
+storage/apache2/*
+storage/mysql/*
+storage/php/*
+public/*
+public/test/*
+!public/index.php
+!public/.htaccess
+!public/test/index.php
+!public/test/.htaccess
